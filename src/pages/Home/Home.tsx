@@ -103,7 +103,7 @@ export const Home = () => {
                 }`}
                 aria-label="Filters"
               >
-                <BsFilter className={`w-6 h-6 text-[#303cf3] ${showFilters ? "hidden" : "block"}`} />
+                <BsFilter className={`w-7 h-7 text-[#303cf3] ${showFilters ? "hidden" : "block"}`} />
                 <div className={`${showFilters ? "block" : "hidden"}`}>
                   <div className="flex flex-col gap-4">
                     <div>
@@ -174,7 +174,7 @@ export const Home = () => {
                 }`}
                 aria-label="Sort"
               >
-                <BsArrowDownUp className={`w-6 h-6 text-[#303cf3] ${showSort ? "hidden" : "block"}`} />
+                <BsArrowDownUp className={`w-7 h-7 text-[#303cf3] ${showSort ? "hidden" : "block"}`} />
                 <div className={`${showSort ? "block" : "hidden"}`}>
                   <div className="flex flex-col gap-4">
                     <div>
