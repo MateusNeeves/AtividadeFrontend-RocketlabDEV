@@ -50,13 +50,13 @@ const Menu: React.FC = () => {
                 }`}
                 aria-label="Shopping Cart"
               >
-                <BsCart4 className="w-7 h-7 text-[#303cf3]" />
+                <BsCart4 className={`w-7 h-7 text-[#303cf3] ${showCartPopup ? "hidden" : "block"}`}/>
                 <div className={`${showCartPopup ? "block" : "hidden"}`}>
                   <h3 className="text-lg font-bold border-b pb-2 mb-2">Your Cart</h3>
                   {cartItems.length === 0 ? (
                     <p className="text-sm">No items added.</p>
                   ) : (
-                    <ul className="max-h-60 overflow-y-auto">
+                    <ul className="max-h-60 overflow-y-auto pe-3">
                       {cartItems.map(({ id, quantity, product }) => (
                         <li key={id} className="flex items-center gap-3 mb-3">
                           <img src={product.thumbnail} alt={product.title} className="w-12 h-12 object-contain rounded" />
