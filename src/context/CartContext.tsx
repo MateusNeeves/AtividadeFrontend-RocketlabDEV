@@ -5,12 +5,14 @@ interface CartContextProps {
   cart: { [key: number]: number };
   addToCart: (productId: number) => void;
   removeFromCart: (productId: number) => void;
+  clearCart: () => void;
 }
 
 export const CartContext = createContext<CartContextProps>({
   cart: {},
   addToCart: () => {},
-  removeFromCart: () => {}
+  removeFromCart: () => {},
+  clearCart: () => {}
 });
 
 interface CartProviderProps {
@@ -18,13 +20,11 @@ interface CartProviderProps {
 }
 
 export const CartProvider = ({ children }: CartProviderProps) => {
-  // Inicializa o estado do cart com os dados do localStorage (se houver)
   const [cart, setCart] = useState<{ [key: number]: number }>(() => {
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : {};
   });
 
-  // Salva as atualizações do cart no localStorage sempre que ele for alterado
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
@@ -51,8 +51,12 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     });
   };
 
+  const clearCart = () => {
+    setCart({});
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
       {children}
     </CartContext.Provider>
   );

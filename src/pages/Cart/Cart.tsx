@@ -1,13 +1,15 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
 import products from "../../data/products.json";
-import { Link } from "react-router-dom";
 import Menu from "../components/Menu";
+import { CustomModal } from "../components/CustomModal";
 
 export const Cart = () => {
-  const { cart, addToCart, removeFromCart } = useContext(CartContext);
+  const { cart, addToCart, removeFromCart, clearCart } = useContext(CartContext);
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
-  // Convert cart to an array with product details
   const cartItems = Object.entries(cart)
     .map(([id, quantity]) => {
       const product = products.products.find((p) => p.id === Number(id));
@@ -15,15 +17,24 @@ export const Cart = () => {
     })
     .filter((item) => item.product);
 
-  // Calculate total price
   const totalPrice = cartItems.reduce(
     (sum, { quantity, product }) => sum + product.price * quantity,
     0
   );
 
+  const handleCheckout = () => {
+    clearCart(); // Limpa o carrinho (o useEffect do Context já atualiza o localStorage)
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    navigate("/");
+  };
+
   return (
     <>
-      <Menu></Menu>
+      <Menu />
       <div className="container mx-auto p-6">
         <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
         {cartItems.length === 0 ? (
@@ -43,12 +54,13 @@ export const Cart = () => {
                   />
                   <div className="flex-1">
                     <h2 className="text-xl font-semibold">{product.title}</h2>
-                    <p className="text-gray-600 text-sm">
-                      {product.description}
-                    </p>
+                    <p className="text-gray-600 text-sm">{product.description}</p>
                     <p className="text-gray-800 font-bold">${product.price}</p>
                     <div className="flex gap-2 mt-2 items-center">
-                      <button onClick={() => addToCart(product.id)} className="px-3 py-1 bg-green-500 text-white rounded">
+                      <button
+                        onClick={() => addToCart(product.id)}
+                        className="px-3 py-1 bg-green-500 text-white rounded"
+                      >
                         +
                       </button>
                       <p className="text-sm">{quantity}</p>
@@ -63,22 +75,34 @@ export const Cart = () => {
                 </li>
               ))}
             </ul>
-            <div className="mt-6 text-right">
-              <p className="text-xl font-bold">
-                Total: ${totalPrice.toFixed(2)}
-              </p>
-            </div>
-            <div className="mt-4 text-right">
-              <Link
-                to="/"
-                className="px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors"
-              >
-                Continue Shopping
-              </Link>
-            </div>
           </>
         )}
+        <div className="mt-6 text-right">
+          <p className="text-xl font-bold">Total: ${totalPrice.toFixed(2)}</p>
+        </div>
+        <div className="mt-4 text-right">
+          <Link
+            to="/"
+            className="px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors"
+          >
+            Continue Shopping
+          </Link>
+          {cartItems.length > 0 && (
+            <button
+              onClick={handleCheckout}
+              className="mt-4 ms-5 px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors"
+            >
+              Checkout
+            </button>
+          )}
+        </div>
       </div>
+      {showModal && (
+        <CustomModal
+          message="Thank you for your purchase! Your order was successful."
+          onClose={handleModalClose}
+        />
+      )}
     </>
   );
 };
