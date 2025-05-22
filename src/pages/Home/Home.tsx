@@ -39,10 +39,10 @@ export const Home = () => {
       product.title.toLowerCase().includes(search.toLowerCase()) ||
       product.description?.toLowerCase().includes(search.toLowerCase());
 
-    const matchesCategory = category ? product.category === category : true;
+    const matchesCategory = category.toLowerCase() ? product.category === category.toLowerCase() : true;
     const matchesMinPrice = minPrice ? product.price >= Number(minPrice) : true;
     const matchesMaxPrice = maxPrice ? product.price <= Number(maxPrice) : true;
-    const matchesTag = tag ? (product.tags || []).includes(tag) : true;
+    const matchesTag = tag.toLowerCase() ? (product.tags || []).includes(tag.toLowerCase()) : true;
 
     return (
       matchesSearch &&
@@ -91,151 +91,127 @@ export const Home = () => {
                 className="flex-1 outline-none bg-transparent text-base"
               />
             </div>
-            <button
-              className="ml-3 px-3 py-2 rounded-lg shadow bg-[#c5c5c5] hover:bg-[#aaa8a8] transition-colors"
-              type="button"
-              onClick={() => setShowFilters(true)}
+            {/* Collapse de filtros */}
+            <div 
+              className="relative z-40"
+              onMouseEnter={() => setShowFilters(true)}
+              onMouseLeave={() => setShowFilters(false)}
             >
-              <BsFilter className="w-6 h-6 text-[#303cf3]" />
-            </button>
-            <button
-              className="ml-3 px-3 py-2 rounded-lg shadow bg-[#c5c5c5] hover:bg-[#aaa8a8] transition-colors"
-              type="button"
-              onClick={() => setShowSort(true)}
+              <div
+                className={`absolute top-[-20px] left-[10px] flex flex-col bg-[#c5c5c5] rounded-lg transition-all duration-300 overflow-hidden ${
+                  showFilters ? "w-[300px] h-[250px] p-4" : "w-[40px] h-[40px] p-1.5"
+                }`}
+                aria-label="Filters"
+              >
+                <BsFilter className={`w-6 h-6 text-[#303cf3] ${showFilters ? "hidden" : "block"}`} />
+                <div className={`${showFilters ? "block" : "hidden"}`}>
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Category</label>
+                      <select
+                        className="w-full border rounded px-2 py-1"
+                        value={category}
+                        onChange={e => setCategory(e.target.value)}
+                      >
+                        <option value="">All</option>
+                        {categories.map(cat => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium mb-1">Min Price</label>
+                        <input
+                          type="number"
+                          className="w-full border rounded px-2 py-1"
+                          value={minPrice}
+                          onChange={e => setMinPrice(e.target.value)}
+                          min={0}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium mb-1">Max Price</label>
+                        <input
+                          type="number"
+                          className="w-full border rounded px-2 py-1"
+                          value={maxPrice}
+                          onChange={e => setMaxPrice(e.target.value)}
+                          min={0}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Tag</label>
+                      <select
+                        className="w-full border rounded px-2 py-1"
+                        value={tag}
+                        onChange={e => setTag(e.target.value)}
+                      >
+                        <option value="">All</option>
+                        {tags.map(t => (
+                          <option key={t} value={t}>
+                            {t}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Collapse de ordenação */}
+            <div 
+              className="relative z-30"
+              onMouseEnter={() => setShowSort(true)}
+              onMouseLeave={() => setShowSort(false)}
             >
-              <BsArrowDownUp className="w-6 h-6 text-[#303cf3]" />
-            </button>
+              <div
+                className={`absolute top-[-20px] left-[60px] flex flex-col bg-[#c5c5c5] rounded-lg transition-all duration-300 overflow-hidden ${
+                  showSort ? "w-[300px] h-[170px] p-4" : "w-[40px] h-[40px] p-1.5"
+                }`}
+                aria-label="Sort"
+              >
+                <BsArrowDownUp className={`w-6 h-6 text-[#303cf3] ${showSort ? "hidden" : "block"}`} />
+                <div className={`${showSort ? "block" : "hidden"}`}>
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Sort by</label>
+                      <select
+                        className="w-full border rounded px-2 py-1"
+                        value={sortField}
+                        onChange={e => setSortField(e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        <option value="title">Name (A-Z/Z-A)</option>
+                        <option value="price">Price</option>
+                        <option value="rating">Rating</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Order</label>
+                      <select
+                        className="w-full border rounded px-2 py-1"
+                        value={sortOrder}
+                        onChange={e => setSortOrder(e.target.value as "asc" | "desc")}
+                      >
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>  
+              </div>
+            </div>
           </div>
-
-          {/* Popup de filtros */}
-          {showFilters && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
-                <button
-                  className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-2xl"
-                  onClick={() => setShowFilters(false)}
-                  aria-label="Fechar"
-                >
-                  &times;
-                </button>
-                <h2 className="text-xl font-bold mb-4 text-[#303cf3]">Filter Products</h2>
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Category</label>
-                    <select
-                      className="w-full border rounded px-2 py-1"
-                      value={category}
-                      onChange={e => setCategory(e.target.value)}
-                    >
-                      <option value="">All</option>
-                      {categories.map(cat => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium mb-1">Min Price</label>
-                      <input
-                        type="number"
-                        className="w-full border rounded px-2 py-1"
-                        value={minPrice}
-                        onChange={e => setMinPrice(e.target.value)}
-                        min={0}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium mb-1">Max Price</label>
-                      <input
-                        type="number"
-                        className="w-full border rounded px-2 py-1"
-                        value={maxPrice}
-                        onChange={e => setMaxPrice(e.target.value)}
-                        min={0}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Tag</label>
-                    <select
-                      className="w-full border rounded px-2 py-1"
-                      value={tag}
-                      onChange={e => setTag(e.target.value)}
-                    >
-                      <option value="">All</option>
-                      {tags.map(t => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <button
-                    className="mt-2 px-4 py-2 bg-[#303cf3] text-white rounded-lg hover:bg-[#2329b6] transition-colors"
-                    onClick={() => setShowFilters(false)}
-                  >
-                    Apply Filters
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Popup de ordenação */}
-          {showSort && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
-                <button
-                  className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-2xl"
-                  onClick={() => setShowSort(false)}
-                  aria-label="Fechar"
-                >
-                  &times;
-                </button>
-                <h2 className="text-xl font-bold mb-4 text-[#303cf3]">Sort Products</h2>
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Sort by</label>
-                    <select
-                      className="w-full border rounded px-2 py-1"
-                      value={sortField}
-                      onChange={e => setSortField(e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      <option value="title">Name (A-Z/Z-A)</option>
-                      <option value="price">Price</option>
-                      <option value="rating">Rating</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Order</label>
-                    <select
-                      className="w-full border rounded px-2 py-1"
-                      value={sortOrder}
-                      onChange={e => setSortOrder(e.target.value as "asc" | "desc")}
-                    >
-                      <option value="asc">Ascending</option>
-                      <option value="desc">Descending</option>
-                    </select>
-                  </div>
-                  <button
-                    className="mt-2 px-4 py-2 bg-[#303cf3] text-white rounded-lg hover:bg-[#2329b6] transition-colors"
-                    onClick={() => setShowSort(false)}
-                  >
-                    Apply Sort
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           <div className="flex flex-wrap justify-center gap-6 p-6">
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="bg-white rounded-lg shadow-md p-4 w-64 flex flex-col items-center hover:shadow-lg hover:bg-[#c5c5c5] transition-colors duration-300"
+                className="bg-white rounded-lg shadow-md p-4 w-64 flex flex-col items-center hover:shadow-lg hover:bg-[#c5c5c5] transition-colors duration-300 justify-between"
               >
                 <a href={`/${product.id}`} className="w-full flex flex-col items-center">
                   <img src={product.thumbnail} alt={product.title} className="w-32 h-32 object-contain mb-2 rounded" />
@@ -244,16 +220,14 @@ export const Home = () => {
                   <span className="font-semibold text-[#303cf3] text-xl mb-1">${product.price}</span>
                   <p className="text-xs text-gray-500 text-center">{product.category}</p>
                 </a>
-                <div className="mt-2 flex gap-2">
+                <div className="mt-2 flex gap-2 items-center">
                   <button
                     onClick={() => addToCart(product.id)}
                     className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
                   >
                     Add
                   </button>
-                  {cart[product.id] && (
-                    <p className="mt-2 text-sm font-medium">{cart[product.id]}</p>
-                  )}
+                    <p className="text-sm font-medium">{cart[product.id]}</p>
                   <button
                     onClick={() => removeFromCart(product.id)}
                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm"
