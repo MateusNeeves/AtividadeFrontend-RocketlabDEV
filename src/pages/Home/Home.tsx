@@ -1,9 +1,12 @@
-import Menu from "../components/Menu"
-import products from "../../data/products.json"
+import Menu from "../components/Menu";
+import products from "../../data/products.json";
 import { BsSearch, BsFilter, BsArrowDownUp } from "react-icons/bs";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { CartContext } from "../../context/CartContext";
 
 export const Home = () => {
+  const { cart, addToCart, removeFromCart } = useContext(CartContext);
+
   const [search, setSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
@@ -15,8 +18,21 @@ export const Home = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Extrai categorias e tags únicas
-  const categories = Array.from(new Set(products.products.map(p => p.category).filter(Boolean).map(cat => cat.charAt(0).toUpperCase() + cat.slice(1))));
-  const tags = Array.from(new Set(products.products.flatMap(p => p.tags || []).map(tag => tag.charAt(0).toUpperCase() + tag.slice(1))));
+  const categories = Array.from(
+    new Set(
+      products.products
+        .map(p => p.category)
+        .filter(Boolean)
+        .map(cat => cat.charAt(0).toUpperCase() + cat.slice(1))
+    )
+  );
+  const tags = Array.from(
+    new Set(
+      products.products
+        .flatMap(p => p.tags || [])
+        .map(tag => tag.charAt(0).toUpperCase() + tag.slice(1))
+    )
+  );
 
   let filteredProducts = products.products.filter((product) => {
     const matchesSearch =
@@ -37,16 +53,12 @@ export const Home = () => {
     );
   });
 
-  // Ordenação
   if (sortField) {
     filteredProducts = [...filteredProducts].sort((a, b) => {
       let aValue, bValue;
       if (sortField === "title") {
         aValue = a.title.toLowerCase();
         bValue = b.title.toLowerCase();
-        if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-        if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-        return 0;
       } else if (sortField === "price") {
         aValue = a.price;
         bValue = b.price;
@@ -64,7 +76,10 @@ export const Home = () => {
     <>
       <Menu />
       <div className="flex justify-center mt-[20px]">
-        <div className="flex flex-col w-[98%] h-[calc(100vh-120px)] rounded-lg overflow-y-auto" style={{ backgroundColor: "#e8e4e4" }}>
+        <div
+          className="flex flex-col w-[98%] h-[calc(100vh-120px)] rounded-lg overflow-y-auto"
+          style={{ backgroundColor: "#e8e4e4" }}
+        >
           <div className="flex items-center mb-4 justify-center pt-8">
             <div className="flex items-center bg-white rounded-lg px-3 py-2 shadow w-[320px]">
               <BsSearch className="text-gray-400 mr-2" />
@@ -114,7 +129,9 @@ export const Home = () => {
                     >
                       <option value="">All</option>
                       {categories.map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -130,7 +147,7 @@ export const Home = () => {
                       />
                     </div>
                     <div className="flex-1">
-                        <label className="block text-sm font-medium mb-1">Max Price</label>
+                      <label className="block text-sm font-medium mb-1">Max Price</label>
                       <input
                         type="number"
                         className="w-full border rounded px-2 py-1"
@@ -149,7 +166,9 @@ export const Home = () => {
                     >
                       <option value="">All</option>
                       {tags.map(t => (
-                        <option key={t} value={t}>{t}</option>
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -198,7 +217,7 @@ export const Home = () => {
                       onChange={e => setSortOrder(e.target.value as "asc" | "desc")}
                     >
                       <option value="asc">Ascending</option>
-                        <option value="desc">Descending</option>
+                      <option value="desc">Descending</option>
                     </select>
                   </div>
                   <button
@@ -214,17 +233,35 @@ export const Home = () => {
 
           <div className="flex flex-wrap justify-center gap-6 p-6">
             {filteredProducts.map((product) => (
-              <a
-                href={"/" + product.id}
-                className="bg-white rounded-lg shadow-md p-4 w-64 flex flex-col items-center hover:shadow-lg hover:bg-[#c5c5c5] transition-colors duration-300"
+              <div
                 key={product.id}
+                className="bg-white rounded-lg shadow-md p-4 w-64 flex flex-col items-center hover:shadow-lg hover:bg-[#c5c5c5] transition-colors duration-300"
               >
-                <img src={product.thumbnail} alt={product.title} className="w-32 h-32 object-contain mb-2 rounded" />
-                <h2 className="font-bold text-lg text-center">{product.title}</h2>
-                <p className="text-gray-600 text-sm text-center mb-2">{product.brand}</p>
-                <span className="font-semibold text-[#303cf3] text-xl mb-1">${product.price}</span>
-                <p className="text-xs text-gray-500 text-center">{product.category}</p>
-              </a>
+                <a href={`/${product.id}`} className="w-full flex flex-col items-center">
+                  <img src={product.thumbnail} alt={product.title} className="w-32 h-32 object-contain mb-2 rounded" />
+                  <h2 className="font-bold text-lg text-center">{product.title}</h2>
+                  <p className="text-gray-600 text-sm text-center mb-2">{product.brand}</p>
+                  <span className="font-semibold text-[#303cf3] text-xl mb-1">${product.price}</span>
+                  <p className="text-xs text-gray-500 text-center">{product.category}</p>
+                </a>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    onClick={() => addToCart(product.id)}
+                    className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+                  >
+                    Add
+                  </button>
+                  {cart[product.id] && (
+                    <p className="mt-2 text-sm font-medium">{cart[product.id]}</p>
+                  )}
+                  <button
+                    onClick={() => removeFromCart(product.id)}
+                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
