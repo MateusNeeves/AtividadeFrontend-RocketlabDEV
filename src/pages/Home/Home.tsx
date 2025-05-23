@@ -234,19 +234,30 @@ export const Home = () => {
                   <p className="text-xs text-gray-500 text-center">{product.category}</p>
                 </a>
                 <div className="mt-2 flex gap-2 items-center">
-                  <button
-                    onClick={() => addToCart(product.id)}
-                    className="px-2 py-1 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors text-sm"
-                  >
-                    Add
-                  </button>
-                    <p className="text-sm font-medium">{cart[product.id]}</p>
-                  <button
-                    onClick={() => removeFromCart(product.id)}
-                    className="px-2 py-1 bg-[#aaa8a8] text-white rounded hover:bg-[#888] transition-colors text-sm"
-                  >
-                    Remove
-                  </button>
+                  {cart[product.id] > 0 ? (
+                    <>
+                      <button
+                        onClick={() => removeFromCart(product.id)}
+                        className="px-2 py-1 bg-[#aaa8a8] text-white rounded hover:bg-[#888] transition-colors text-sm"
+                      >
+                        -
+                      </button>
+                      <p className="text-sm font-medium">{cart[product.id]}</p>
+                      <button
+                        onClick={() => addToCart(product.id)}
+                        className="px-2 py-1 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors text-sm"
+                      >
+                        +
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => addToCart(product.id)}
+                      className="px-2 py-1 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors text-sm"
+                    >
+                      Add to Cart
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

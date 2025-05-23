@@ -35,13 +35,13 @@ export const Cart = () => {
   return (
     <>
       <Menu />
-      <div className="container max-w-3xl mx-auto p-6 bg-[#e8e4e4] rounded-lg shadow mt-[100px] h-[calc(100vh-120px)] overflow-y-auto fixed-top">
+      <div className="container max-w-3xl mx-auto p-6 bg-[#e8e4e4] rounded-lg shadow mt-[100px] h-[calc(100vh-120px)] overflow-y-auto fixed-top flex flex-col">
         <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
         {cartItems.length === 0 ? (
           <p className="text-lg">Your cart is empty.</p>
         ) : (
           <>
-            <ul className="space-y-4">
+            <ul className="space-y-4 flex-1">
               {cartItems.map(({ id, quantity, product }) => (
                 <li
                   key={id}
@@ -58,17 +58,17 @@ export const Cart = () => {
                     <p className="text-gray-800 font-bold">${product.price}</p>
                     <div className="flex gap-2 mt-2 items-center">
                       <button
-                        onClick={() => addToCart(product.id)}
-                        className="px-3 py-1 bg-[#303cf3] hover:bg-[#2329b6] text-white rounded"
-                      >
-                        +
-                      </button>
-                      <p className="text-sm">{quantity}</p>
-                      <button
                         onClick={() => removeFromCart(product.id)}
                         className="px-3 py-1 bg-[#aaa8a8] hover:bg-[#888] text-white rounded"
                       >
                         -
+                      </button>
+                      <p className="text-sm">{quantity}</p>
+                      <button
+                        onClick={() => addToCart(product.id)}
+                        className="px-3 py-1 bg-[#303cf3] hover:bg-[#2329b6] text-white rounded"
+                      >
+                        +
                       </button>
                     </div>
                   </div>
@@ -77,32 +77,35 @@ export const Cart = () => {
             </ul>
           </>
         )}
-        <div className="mt-6 text-right">
-          <p className="text-xl font-bold">Total: ${totalPrice.toFixed(2)}</p>
+        {/* Footer fixo no final da div */}
+        <div className="mt-auto pt-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xl font-bold">Total: ${totalPrice.toFixed(2)}</p>
+            <div className="flex gap-3">
+              <Link
+                to="/"
+                className="px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors h-[40px]"
+              >
+                Continue Shopping
+              </Link>
+              {cartItems.length > 0 && (
+                <a
+                  onClick={handleCheckout}
+                  className="px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors h-[40px] cursor-pointer"
+                >
+                  Checkout
+                </a>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="mt-4 text-right">
-          <Link
-            to="/"
-            className="px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors h-[40px]"
-          >
-            Continue Shopping
-          </Link>
-          {cartItems.length > 0 && (
-            <a
-              onClick={handleCheckout}
-              className="ms-5 px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors h-[40px] cursor-pointer"
-            >
-              Checkout
-            </a>
-          )}
-        </div>
+        {showModal && (
+          <CustomModal
+            message="Thank you for your purchase! Your order was successful."
+            onClose={handleModalClose}
+          />
+        )}
       </div>
-      {showModal && (
-        <CustomModal
-          message="Thank you for your purchase! Your order was successful."
-          onClose={handleModalClose}
-        />
-      )}
     </>
   );
 };
