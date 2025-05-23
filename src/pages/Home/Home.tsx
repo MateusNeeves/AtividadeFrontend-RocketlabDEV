@@ -1,7 +1,7 @@
 import Menu from "../components/Menu";
 import products from "../../data/products.json";
 import { BsSearch, BsFilter, BsArrowDownUp } from "react-icons/bs";
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { CartContext } from "../../context/CartContext";
 
 export const Home = () => {
@@ -16,6 +16,8 @@ export const Home = () => {
   const [tag, setTag] = useState("");
   const [sortField, setSortField] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+    const sortRef = useRef<HTMLDivElement>(null);
 
   // Extrai categorias e tags únicas
   const categories = Array.from(
@@ -72,16 +74,26 @@ export const Home = () => {
     });
   }
 
+  const getFilterPosition = () => {
+    if (!sortRef.current) return "left-[-90px]";
+    const rect = sortRef.current.getBoundingClientRect();
+    return rect.x + 250 > window.innerWidth ? "right-[50px] z-30" : "left-[-90px] z-40";
+  };
+
+  const getSortPosition = () => {
+    if (!sortRef.current) return "left-[-40px]";
+    const rect = sortRef.current.getBoundingClientRect();
+    return rect.x + 250 > window.innerWidth ? "right-[0px] z-40" : "left-[-40px] z-30";
+  };
+
   return (
     <>
       <Menu />
-      <div className="flex justify-center mt-[20px]">
+      <div className="flex justify-center mt-[100px]">
         <div
-          className="flex flex-col w-[98%] h-[calc(100vh-120px)] rounded-lg overflow-y-auto"
-          style={{ backgroundColor: "#e8e4e4" }}
-        >
+          className="flex flex-col w-[98%] h-[calc(100vh-120px)] rounded-lg overflow-y-auto bg-[#e8e4e4] fixed">
           <div className="flex items-center mb-4 justify-center pt-8">
-            <div className="flex items-center bg-white rounded-lg px-3 py-2 shadow w-[320px]">
+            <div className="flex items-center bg-white rounded-lg px-3 py-2 shadow w-[320px] me-[100px]">
               <BsSearch className="text-gray-400 mr-2" />
               <input
                 type="text"
@@ -92,15 +104,15 @@ export const Home = () => {
               />
             </div>
             {/* Collapse de filtros */}
-            <div 
-              className="relative z-40"
+            <div
+              className="relative"
               onMouseEnter={() => setShowFilters(true)}
               onMouseLeave={() => setShowFilters(false)}
             >
               <div
-                className={`absolute top-[-20px] left-[10px] flex flex-col bg-[#c5c5c5] rounded-lg transition-all duration-300 overflow-hidden ${
+                className={`absolute top-[-20px] flex flex-col bg-[#c5c5c5] rounded-lg transition-all duration-300 overflow-hidden ${
                   showFilters ? "w-[300px] h-[250px] p-4" : "w-[40px] h-[40px] p-1.5"
-                }`}
+                }  ${getFilterPosition()}`}
                 aria-label="Filters"
               >
                 <BsFilter className={`w-7 h-7 text-[#303cf3] ${showFilters ? "hidden" : "block"}`} />
@@ -163,15 +175,16 @@ export const Home = () => {
               </div>
             </div>
             {/* Collapse de ordenação */}
-            <div 
-              className="relative z-30"
+            <div
+              ref={sortRef}
+              className="relative"
               onMouseEnter={() => setShowSort(true)}
               onMouseLeave={() => setShowSort(false)}
             >
               <div
-                className={`absolute top-[-20px] left-[60px] flex flex-col bg-[#c5c5c5] rounded-lg transition-all duration-300 overflow-hidden ${
+                className={`absolute top-[-20px] flex flex-col bg-[#c5c5c5] rounded-lg transition-all duration-300 overflow-hidden ${
                   showSort ? "w-[300px] h-[170px] p-4" : "w-[40px] h-[40px] p-1.5"
-                }`}
+                }  ${getSortPosition()}`}
                 aria-label="Sort"
               >
                 <BsArrowDownUp className={`w-7 h-7 text-[#303cf3] ${showSort ? "hidden" : "block"}`} />
@@ -213,7 +226,7 @@ export const Home = () => {
                 key={product.id}
                 className="bg-white rounded-lg shadow-md p-4 w-64 flex flex-col items-center hover:shadow-lg hover:bg-[#c5c5c5] transition-colors duration-300 justify-between"
               >
-                <a href={`/${product.id}`} className="w-full flex flex-col items-center">
+                <a href={`/product/${product.id}`} className="w-full flex flex-col items-center">
                   <img src={product.thumbnail} alt={product.title} className="w-32 h-32 object-contain mb-2 rounded" />
                   <h2 className="font-bold text-lg text-center">{product.title}</h2>
                   <p className="text-gray-600 text-sm text-center mb-2">{product.brand}</p>
@@ -223,14 +236,14 @@ export const Home = () => {
                 <div className="mt-2 flex gap-2 items-center">
                   <button
                     onClick={() => addToCart(product.id)}
-                    className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+                    className="px-2 py-1 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors text-sm"
                   >
                     Add
                   </button>
                     <p className="text-sm font-medium">{cart[product.id]}</p>
                   <button
                     onClick={() => removeFromCart(product.id)}
-                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm"
+                    className="px-2 py-1 bg-[#aaa8a8] text-white rounded hover:bg-[#888] transition-colors text-sm"
                   >
                     Remove
                   </button>

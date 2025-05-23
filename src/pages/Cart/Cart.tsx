@@ -35,7 +35,7 @@ export const Cart = () => {
   return (
     <>
       <Menu />
-      <div className="container mx-auto p-6">
+      <div className="container max-w-3xl mx-auto p-6 bg-[#e8e4e4] rounded-lg shadow mt-[100px] h-[calc(100vh-120px)] overflow-y-auto fixed-top">
         <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
         {cartItems.length === 0 ? (
           <p className="text-lg">Your cart is empty.</p>
@@ -59,14 +59,14 @@ export const Cart = () => {
                     <div className="flex gap-2 mt-2 items-center">
                       <button
                         onClick={() => addToCart(product.id)}
-                        className="px-3 py-1 bg-green-500 text-white rounded"
+                        className="px-3 py-1 bg-[#303cf3] hover:bg-[#2329b6] text-white rounded"
                       >
                         +
                       </button>
                       <p className="text-sm">{quantity}</p>
                       <button
                         onClick={() => removeFromCart(product.id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded"
+                        className="px-3 py-1 bg-[#aaa8a8] hover:bg-[#888] text-white rounded"
                       >
                         -
                       </button>
@@ -83,17 +83,17 @@ export const Cart = () => {
         <div className="mt-4 text-right">
           <Link
             to="/"
-            className="px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors"
+            className="px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors h-[40px]"
           >
             Continue Shopping
           </Link>
           {cartItems.length > 0 && (
-            <button
+            <a
               onClick={handleCheckout}
-              className="mt-4 ms-5 px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors"
+              className="ms-5 px-5 py-2 bg-[#303cf3] text-white rounded hover:bg-[#2329b6] transition-colors h-[40px] cursor-pointer"
             >
               Checkout
-            </button>
+            </a>
           )}
         </div>
       </div>

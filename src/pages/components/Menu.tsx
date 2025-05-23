@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { BsCart4 } from "react-icons/bs";
 import { CartContext } from "../../context/CartContext";
 import products from "../../data/products.json";
@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 const Menu: React.FC = () => {
   const { cart, addToCart, removeFromCart } = useContext(CartContext);
   const [showCartPopup, setShowCartPopup] = useState(false);
+  const cartRef = useRef<HTMLDivElement>(null);
 
   // Convert cart to an array with product details
   const cartItems = Object.entries(cart)
@@ -22,10 +23,16 @@ const Menu: React.FC = () => {
     0
   );
 
+  const getPopupPosition = () => {
+    if (!cartRef.current) return "left-[-20px]";
+    const rect = cartRef.current.getBoundingClientRect();
+    return rect.x + 320 > window.innerWidth ? "right-[-20px]" : "left-[-20px]";
+  };
+
   return (
     <>
-      <div className="relative">
-        <div className="flex h-[80px] justify-center rounded-b-lg" style={{ backgroundColor: "#e8e4e4" }}>
+      <div className="relative overflow-hidden">
+        <div className="flex h-[80px] justify-center rounded-b-lg fixed top-0 left-0 w-full z-50" style={{ backgroundColor: "#e8e4e4" }}>
           <div className="flex w-3/5 justify-between items-center">
             <a href="/" className="flex items-center p-1.5 pb-3 hover:bg-[#c5c5c5] rounded-lg transition-colors">
               <h1 className="italic font-extrabold text-3xl relative" style={{ color: "#303cf3" }}>
@@ -39,15 +46,16 @@ const Menu: React.FC = () => {
               <h1 className="italic font-extrabold text-base ms-0.5 mt-[-20px]" style={{ color: "#303cf3" }}>LAB</h1>
               <h1 className="italic font-extrabold text-3xl" style={{ color: "#303cf3" }}>shop</h1>
             </a>
-            <div 
-              className="relative" 
+            <div
+			        ref={cartRef}
+              className="relative z-50" 
               onMouseEnter={() => setShowCartPopup(true)} 
               onMouseLeave={() => setShowCartPopup(false)}
             >
               <div
-                className={`absolute top-[-20px] left-[-20px] flex flex-col bg-[#c5c5c5] rounded-lg transition-all duration-500 overflow-hidden items-between ${
+                className={`absolute top-[-20px] flex flex-col bg-[#c5c5c5] rounded-lg transition-all duration-500 overflow-hidden items-between ${
                   showCartPopup ? "w-[320px] h-[400px] p-4" : "w-[40px] h-[40px] p-1.5"
-                }`}
+                } ${getPopupPosition()}`}
                 aria-label="Shopping Cart"
               >
                 <BsCart4 className={`w-7 h-7 text-[#303cf3] ${showCartPopup ? "hidden" : "block"}`}/>
@@ -72,13 +80,13 @@ const Menu: React.FC = () => {
                           <div className="flex flex-col gap-1">
                             <button
                               onClick={() => addToCart(product.id)}
-                              className="px-2 py-1 bg-green-500 text-white rounded text-xs"
+                              className="px-2 py-1 bg-[#303cf3] hover:bg-[#2329b6] text-white rounded text-xs"
                             >
                               +
                             </button>
                             <button
                               onClick={() => removeFromCart(product.id)}
-                              className="px-2 py-1 bg-red-500 text-white rounded text-xs"
+                              className="px-2 py-1 bg-[#aaa8a8] hover:bg-[#888] text-white rounded text-xs"
                             >
                               -
                             </button>
