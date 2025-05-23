@@ -134,7 +134,7 @@ export const Product = () => {
           </div>
         </div>
         {/* Reviews */}
-        <div className="mt-8">
+        <div className="mt-6">
           <h2 className="text-lg font-bold mb-2">Reviews</h2>
           <div className="flex flex-col gap-4">
             {product.reviews?.length ? (
