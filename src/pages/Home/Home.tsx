@@ -38,8 +38,7 @@ export const Home = () => {
 
   let filteredProducts = products.products.filter((product) => {
     const matchesSearch =
-      product.title.toLowerCase().includes(search.toLowerCase()) ||
-      product.description?.toLowerCase().includes(search.toLowerCase());
+      product.title.toLowerCase().includes(search.toLowerCase());
 
     const matchesCategory = category.toLowerCase() ? product.category === category.toLowerCase() : true;
     const matchesMinPrice = minPrice ? product.price >= Number(minPrice) : true;
